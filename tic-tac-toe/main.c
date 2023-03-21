@@ -79,7 +79,7 @@ void print_winner(int turn)
 {
     clrscr();
     render_board();
-    printf("\n\n\n");
+    printf("\n");
     (turn % 2 == 0) ? printf(C_BLUE "*** Player 1 WINS! ***" C_RESET)
                     : printf(C_RED "*** Player 2 WINS! ***" C_RESET);
     printf("\n\n\n");
@@ -88,6 +88,11 @@ void print_winner(int turn)
 void print_exit_msg()
 {
     printf(C_MAGENTA "Exited game before it was finished...\n" C_RESET);
+}
+
+void print_space_error()
+{
+    printf(C_YELLOW "Sorry cell space is taken take by a sign!" C_RESET);
 }
 
 /*************************************************************
@@ -184,15 +189,15 @@ int game_loop()
     do
     {
         clrscr();
+        render_board();
+
         if (space_busy)
         {
-            printf("sorry space is taken take another!");
+            print_space_error();
             space_busy = 0;
         }
 
-        render_board();
-
-        printf("\n\n\n");
+        printf("\n");
         (turn % 2 == 0) ? printf(C_BLUE "Player 1 [X] >" C_RESET)
                         : printf(C_RED "Player 2 [O] >" C_RESET);
 
@@ -240,6 +245,7 @@ void play_game()
 
         print_game_menu();
         input = fgetc(stdin);
+
     } while (input != 'q');
 }
 
@@ -251,7 +257,7 @@ int main(int argc, char *argv[])
     printf("Play tic tac toe? [Y]/n/q:");
     char input = fgetc(stdin);
 
-    // Quit if user choose n or q
+    // Close application if user do not want to play
     if (input == 'n' || input == 'q')
     {
         return 0;

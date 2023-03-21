@@ -15,6 +15,7 @@
 #define C_RED "\x1b[31m"
 #define C_BLUE "\x1b[34m"
 #define C_CYAN "\x1b[44m"
+#define C_YELLOW "\x1b[93m"
 #define C_MAGENTA "\x1b[35m"
 #define C_RESET "\x1b[0m"
 
@@ -36,6 +37,7 @@ void print_game_menu();
 void print_draw(int turn);
 void print_winner(int turn);
 void print_exit_msg();
+void print_space_error();
 
 /*************************************************************
  *
