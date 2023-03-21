@@ -56,7 +56,6 @@ void reset_board()
 
 void draw_board()
 {
-    printf("\n");
     printf("\n  -------------------\n");
     // Draw each row
     for (int i = 0; i < 3; i++)
