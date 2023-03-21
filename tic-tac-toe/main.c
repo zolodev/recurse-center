@@ -33,24 +33,49 @@ void print_intro()
 {
     printf("\n\n\n");
     printf("--- Tic Tac Toe Game ---\n");
+    printf("\n");
     printf("Instructions\n");
-    printf("The game is about to get three in a row horizontal or diagonal.\n");
-    printf("Player chose a number between 1-9.\n");
+    printf("Player should try to get three in a row.\n");
+    printf("Player choose a number between 1-9.\n");
+    printf("\n");
     printf("-------------------------------------\n");
+    printf("\n");
     printf(C_BLUE "Player 1 sign: X\n" C_RESET);
     printf(C_RED "Player 2 sign: O\n" C_RESET);
     printf("To quit the game: q \n");
+    printf("\n");
     printf("-------------------------------------\n");
 }
 
 void reset_board()
 {
-    for (int i = 0; i < sizeof(board) / sizeof(board[0]); i++)
+    int board_size = sizeof(board) / sizeof(board[0]);
+
+    for (int i = 0; i < board_size; i++)
     {
-        for (int j = 0; j < sizeof(board) / sizeof(board[i][0]); j++)
+        for (int j = 0; j < board_size; j++)
         {
             board[i][j] = ' ';
         }
+    }
+}
+
+void print_cell(char cell)
+{
+    switch (cell)
+    {
+
+    case PLAYER_ONE_SIGN:
+        printf(C_BLUE "%c" C_RESET, cell);
+        break;
+
+    case PLAYER_TWO_SIGN:
+        printf(C_RED "%c" C_RESET, cell);
+        break;
+
+    default:
+        printf("%c", cell);
+        break;
     }
 }
 
@@ -66,18 +91,7 @@ void draw_board()
         for (int j = 0; j < 3; j++)
         {
             // Print signs
-            if (board[i][j] == PLAYER_ONE_SIGN)
-            {
-                printf(C_BLUE "%c" C_RESET, board[i][j]);
-            }
-            else if (board[i][j] == PLAYER_TWO_SIGN)
-            {
-                printf(C_RED "%c" C_RESET, board[i][j]);
-            }
-            else
-            {
-                printf("%c", board[i][j]);
-            }
+            print_cell(board[i][j]);
 
             if (j < 2)
             {
@@ -142,16 +156,47 @@ int check_winner(int turn)
     return win;
 }
 
+void print_draw(int turn)
+{
+    // Draw
+    if (!check_winner(turn))
+    {
+        clrscr();
+        draw_board();
+        printf("\n\n\n");
+        printf(C_MAGENTA "*** Draw! ***" C_RESET);
+        printf("\n\n\n");
+    }
+}
+
+void print_winner(int turn)
+{
+    clrscr();
+    draw_board();
+    printf("\n\n\n");
+    (turn % 2 == 0) ? printf(C_BLUE "*** Player 1 WINS! ***" C_RESET)
+                    : printf(C_RED "*** Player 2 WINS! ***" C_RESET);
+    printf("\n\n\n");
+}
+
 int play_loop()
 {
     char input = ' ';
     int turn = 0;
+    int space_busy = 0;
 
     reset_board();
     while (turn < 9)
     {
         clrscr();
+        if (space_busy)
+        {
+            printf("sorry space is taken take another!");
+            space_busy = 0;
+        }
+
         draw_board();
+
         printf("\n\n\n");
         (turn % 2 == 0) ? printf(C_BLUE "Player 1 [X] >" C_RESET)
                         : printf(C_RED "Player 2 [O] >" C_RESET);
@@ -172,32 +217,38 @@ int play_loop()
             {
                 if (check_winner(turn))
                 {
-                    clrscr();
-                    draw_board();
-                    printf("\n\n\n");
-                    (turn % 2 == 0) ? printf(C_BLUE "*** Player 1 WINS! ***" C_RESET)
-                                    : printf(C_RED "*** Player 2 WINS! ***" C_RESET);
-                    printf("\n\n\n");
+                    print_winner(turn);
                     return 0;
                 }
+
+                turn++;
             }
 
-            (success) ? turn++
-                      : printf("sorry space is taken take another!");
+            space_busy = !success;
         }
     }
 
-    // Draw
-    if (!check_winner(turn))
-    {
-        clrscr();
-        draw_board();
-        printf("\n\n\n");
-        printf(C_MAGENTA "*** Draw! ***" C_RESET);
-        printf("\n\n\n");
-    }
+    print_draw(turn);
 
     return 0;
+}
+
+void print_exit_msg()
+{
+    printf(C_MAGENTA "Exited game before it was finished...\n" C_RESET);
+}
+
+void play_game()
+{
+    char input = ' ';
+    while (input != 'q')
+    {
+        if (play_loop())
+            print_exit_msg();
+
+        print_game_menu();
+        input = fgetc(stdin);
+    }
 }
 
 int main(int argc, char *argv[])
@@ -205,30 +256,15 @@ int main(int argc, char *argv[])
     clrscr();
     print_intro();
 
-    printf("Play tic tac toe? [Y]/n:");
-    char input = ' ';
-    fgets(&input, sizeof(&input), stdin);
+    printf("Play tic tac toe? [Y]/n/q:");
 
-    if (input != 'n')
-    {
-        int choice = 1;
+    char input = fgetc(stdin);
 
-        do
-        {
-            if (choice)
-            {
-                int status = play_loop();
-                if (status)
-                    printf("Exit game before it was finished...\n");
-            }
+    // Quit if user choose n or q
+    if (input == 'n' || input == 'q')
+        return 0;
 
-            print_game_menu();
-
-            fgets(&input, sizeof(&input), stdin);
-            choice = (input != 'q');
-
-        } while (choice);
-    }
+    play_game();
 
     return 0;
 }
