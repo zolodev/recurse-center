@@ -249,7 +249,6 @@ int main(int argc, char *argv[])
     print_intro();
 
     printf("Play tic tac toe? [Y]/n/q:");
-
     char input = fgetc(stdin);
 
     // Quit if user choose n or q
