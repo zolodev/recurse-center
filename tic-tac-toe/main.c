@@ -9,21 +9,13 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include "main.h"
 
-#define PLAYER_ONE_SIGN 'X'
-#define PLAYER_TWO_SIGN 'O'
-
-#define C_RED "\x1b[31m"
-#define C_BLUE "\x1b[34m"
-#define C_CYAN "\x1b[44m"
-#define C_MAGENTA "\x1b[35m"
-#define C_RESET "\x1b[0m"
-
-#define ROWS 3
-#define COLS 3
-
-char board[ROWS][COLS] = {{' '}};
-
+/*************************************************************
+ *
+ * Print functions
+ *
+ *************************************************************/
 void clrscr()
 {
     printf("\e[1;1H\e[2J");
@@ -47,17 +39,6 @@ void print_intro()
     printf("-------------------------------------\n");
 }
 
-void reset_board()
-{
-    for (int i = 0; i < ROWS; i++)
-    {
-        for (int j = 0; j < COLS; j++)
-        {
-            board[i][j] = ' ';
-        }
-    }
-}
-
 void print_cell(char cell)
 {
     switch (cell)
@@ -74,6 +55,54 @@ void print_cell(char cell)
     default:
         printf("%c", cell);
         break;
+    }
+}
+
+void print_game_menu()
+{
+    printf("--- Menu ---\n");
+    printf("[R]estart.\n");
+    printf("[Q]uit.\n");
+    printf("Choice default [R]>");
+}
+
+void print_draw(int turn)
+{
+    clrscr();
+    render_board();
+    printf("\n\n\n");
+    printf(C_MAGENTA "*** Draw! ***" C_RESET);
+    printf("\n\n\n");
+}
+
+void print_winner(int turn)
+{
+    clrscr();
+    render_board();
+    printf("\n\n\n");
+    (turn % 2 == 0) ? printf(C_BLUE "*** Player 1 WINS! ***" C_RESET)
+                    : printf(C_RED "*** Player 2 WINS! ***" C_RESET);
+    printf("\n\n\n");
+}
+
+void print_exit_msg()
+{
+    printf(C_MAGENTA "Exited game before it was finished...\n" C_RESET);
+}
+
+/*************************************************************
+ *
+ * Board functions
+ *
+ *************************************************************/
+void reset_board()
+{
+    for (int i = 0; i < ROWS; i++)
+    {
+        for (int j = 0; j < COLS; j++)
+        {
+            board[i][j] = ' ';
+        }
     }
 }
 
@@ -106,14 +135,6 @@ void render_board()
     printf("\n  -------------------\n");
 }
 
-void print_game_menu()
-{
-    printf("--- Menu ---\n");
-    printf("[R]estart.\n");
-    printf("[Q]uit.\n");
-    printf("Choice default [R]>");
-}
-
 int update_board(int pos, int turn)
 {
     char sign = (turn % 2 == 0) ? PLAYER_ONE_SIGN : PLAYER_TWO_SIGN;
@@ -122,16 +143,15 @@ int update_board(int pos, int turn)
     // 1-3 first row, 2-6 second row, 3-9 third row
     int row = (pos - 1) / 3;
     int col = (pos - 1) % 3;
-    int success = (board[row][col] == ' ');
 
-    if (success)
-    {
-        board[row][col] = sign;
-    }
-
-    return success;
+    return (board[row][col] == ' ') ? board[row][col] = sign : 0;
 }
 
+/*************************************************************
+ *
+ * Game functions
+ *
+ *************************************************************/
 int check_winner(int turn)
 {
     char sn = (turn % 2 == 0) ? PLAYER_ONE_SIGN : PLAYER_TWO_SIGN;
@@ -154,36 +174,14 @@ int check_winner(int turn)
     return win;
 }
 
-void print_draw(int turn)
-{
-    if (!check_winner(turn))
-    {
-        clrscr();
-        render_board();
-        printf("\n\n\n");
-        printf(C_MAGENTA "*** Draw! ***" C_RESET);
-        printf("\n\n\n");
-    }
-}
-
-void print_winner(int turn)
-{
-    clrscr();
-    render_board();
-    printf("\n\n\n");
-    (turn % 2 == 0) ? printf(C_BLUE "*** Player 1 WINS! ***" C_RESET)
-                    : printf(C_RED "*** Player 2 WINS! ***" C_RESET);
-    printf("\n\n\n");
-}
-
-int play_loop()
+int game_loop()
 {
     char input = ' ';
     int turn = 0;
     int space_busy = 0;
 
     reset_board();
-    while (turn < 9)
+    do
     {
         clrscr();
         if (space_busy)
@@ -223,29 +221,26 @@ int play_loop()
 
             space_busy = !success;
         }
-    }
+    } while (turn < 9);
 
     print_draw(turn);
 
     return 0;
 }
 
-void print_exit_msg()
-{
-    printf(C_MAGENTA "Exited game before it was finished...\n" C_RESET);
-}
-
 void play_game()
 {
     char input = ' ';
-    while (input != 'q')
+    do
     {
-        if (play_loop())
+        if (game_loop())
+        {
             print_exit_msg();
+        }
 
         print_game_menu();
         input = fgetc(stdin);
-    }
+    } while (input != 'q');
 }
 
 int main(int argc, char *argv[])
@@ -259,7 +254,9 @@ int main(int argc, char *argv[])
 
     // Quit if user choose n or q
     if (input == 'n' || input == 'q')
+    {
         return 0;
+    }
 
     play_game();
 
