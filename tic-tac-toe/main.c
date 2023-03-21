@@ -16,6 +16,7 @@
  * Print functions
  *
  *************************************************************/
+
 void clrscr()
 {
     printf("\e[1;1H\e[2J");
@@ -100,6 +101,7 @@ void print_space_error()
  * Board functions
  *
  *************************************************************/
+
 void reset_board()
 {
     for (int i = 0; i < ROWS; i++)
@@ -157,6 +159,7 @@ int update_board(int pos, int turn)
  * Game functions
  *
  *************************************************************/
+
 int check_winner(int turn)
 {
     char sn = (turn % 2 == 0) ? PLAYER_ONE_SIGN : PLAYER_TWO_SIGN;
