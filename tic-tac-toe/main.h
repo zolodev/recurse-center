@@ -23,6 +23,7 @@
 #define COLS 3
 
 char board[ROWS][COLS] = {{' '}};
+int useAI = 0;
 
 /*************************************************************
  *
@@ -46,6 +47,7 @@ void print_space_error();
  *************************************************************/
 void reset_board();
 void render_board();
+int can_update_board(int pos);
 int update_board(int pos, int turn);
 
 /*************************************************************
@@ -54,6 +56,8 @@ int update_board(int pos, int turn);
  *
  *************************************************************/
 int check_winner(int turn);
+void use_ai();
+char get_ai_input();
 int game_loop();
 void play_game();
 

@@ -9,6 +9,10 @@
 
 #include <stdio.h>
 #include <ctype.h>
+
+#include <stdlib.h>
+#include <time.h>
+
 #include "main.h"
 
 /*************************************************************
@@ -142,6 +146,15 @@ void render_board()
     printf("\n  -------------------\n");
 }
 
+int can_update_board(int pos)
+{
+    // user count from 1-9
+    // 1-3 first row, 2-6 second row, 3-9 third row
+    int row = (pos - 1) / 3;
+    int col = (pos - 1) % 3;
+    return (board[row][col] == ' ');
+}
+
 int update_board(int pos, int turn)
 {
     char sign = (turn % 2 == 0) ? PLAYER_ONE_SIGN : PLAYER_TWO_SIGN;
@@ -181,6 +194,36 @@ int check_winner(int turn)
 
     return win;
 }
+void use_ai()
+{
+    printf("Use AI? [Y]/n:");
+    char in = fgetc(stdin);
+
+    useAI = (in != 'n');
+}
+
+char get_ai_input()
+{
+    char input_to_return = ' ';
+    int can_update = 0;
+    printf("Thinking...");
+
+    // Seed random with time
+    srand(time(0));
+    do
+    {
+        // Random number between 1-9
+        int number = (rand() % 10);
+        can_update = can_update_board(number);
+        if (can_update)
+        {
+            input_to_return = number + '0';
+        }
+
+    } while (can_update == 0);
+
+    return input_to_return;
+}
 
 int game_loop()
 {
@@ -204,8 +247,23 @@ int game_loop()
         (turn % 2 == 0) ? printf(C_BLUE "Player 1 [X] >" C_RESET)
                         : printf(C_RED "Player 2 [O] >" C_RESET);
 
-        // User place marker
-        fgets(&input, sizeof(&input), stdin);
+        if (useAI)
+        {
+            if (turn % 2 == 0)
+            {
+                // User place marker
+                fgets(&input, sizeof(&input), stdin);
+            }
+            else
+            {
+                // AI's turn
+                input = get_ai_input();
+            }
+        }
+        else
+        {
+            fgets(&input, sizeof(&input), stdin);
+        }
 
         if (input == 'q')
         {
@@ -241,6 +299,7 @@ void play_game()
     char input = ' ';
     do
     {
+        use_ai();
         if (game_loop())
         {
             print_exit_msg();
