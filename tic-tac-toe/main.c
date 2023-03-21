@@ -49,11 +49,9 @@ void print_intro()
 
 void reset_board()
 {
-    int board_size = sizeof(board) / sizeof(board[0]);
-
-    for (int i = 0; i < board_size; i++)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 0; j < board_size; j++)
+        for (int j = 0; j < COLS; j++)
         {
             board[i][j] = ' ';
         }
@@ -79,16 +77,16 @@ void print_cell(char cell)
     }
 }
 
-void draw_board()
+void render_board()
 {
     printf("\n  -------------------\n");
     // Draw each row
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < ROWS; i++)
     {
         printf("  |  ");
 
         // Draw each column
-        for (int j = 0; j < 3; j++)
+        for (int j = 0; j < COLS; j++)
         {
             // Print signs
             print_cell(board[i][j]);
@@ -116,14 +114,14 @@ void print_game_menu()
     printf("Choice default [R]>");
 }
 
-int update_board(int input, int turn)
+int update_board(int pos, int turn)
 {
     char sign = (turn % 2 == 0) ? PLAYER_ONE_SIGN : PLAYER_TWO_SIGN;
 
     // user count from 1-9
     // 1-3 first row, 2-6 second row, 3-9 third row
-    int row = (input - 1) / 3;
-    int col = (input - 1) % 3;
+    int row = (pos - 1) / 3;
+    int col = (pos - 1) % 3;
     int success = (board[row][col] == ' ');
 
     if (success)
@@ -158,11 +156,10 @@ int check_winner(int turn)
 
 void print_draw(int turn)
 {
-    // Draw
     if (!check_winner(turn))
     {
         clrscr();
-        draw_board();
+        render_board();
         printf("\n\n\n");
         printf(C_MAGENTA "*** Draw! ***" C_RESET);
         printf("\n\n\n");
@@ -172,7 +169,7 @@ void print_draw(int turn)
 void print_winner(int turn)
 {
     clrscr();
-    draw_board();
+    render_board();
     printf("\n\n\n");
     (turn % 2 == 0) ? printf(C_BLUE "*** Player 1 WINS! ***" C_RESET)
                     : printf(C_RED "*** Player 2 WINS! ***" C_RESET);
@@ -195,7 +192,7 @@ int play_loop()
             space_busy = 0;
         }
 
-        draw_board();
+        render_board();
 
         printf("\n\n\n");
         (turn % 2 == 0) ? printf(C_BLUE "Player 1 [X] >" C_RESET)
