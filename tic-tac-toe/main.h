@@ -32,6 +32,10 @@
 
 #define ROWS 3
 #define COLS 3
+#define MAX_TURNS 9
+
+#define BOARD_HORIZONTAL_LINE "\n -------------\n"
+#define BOARD_VERTICAL_LINE " | "
 
 char board[ROWS][COLS] = {{' '}};
 

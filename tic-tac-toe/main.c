@@ -92,31 +92,30 @@ void print_space_error() {
  *************************************************************/
 
 void reset_board() {
-  for (int i = 0; i < ROWS; i++) {
-    for (int j = 0; j < COLS; j++) {
-      board[i][j] = ' ';
+  for (int row = 0; row < ROWS; row++) {
+    for (int col = 0; col < COLS; col++) {
+      board[row][col] = ' ';
     }
   }
 }
 
 void render_board() {
-  printf("\n  -------------------\n");
+  printf(BOARD_HORIZONTAL_LINE);
+
   // Draw each row
-  for (int i = 0; i < ROWS; i++) {
-    printf("  |  ");
+  for (int row = 0; row < ROWS; row++) {
+    printf(BOARD_VERTICAL_LINE);
 
     // Draw each column
-    for (int j = 0; j < COLS; j++) {
+    for (int col = 0; col < COLS; col++) {
       // Print signs
-      print_cell(board[i][j]);
+      print_cell(board[row][col]);
 
-      if (j < 2) printf("  |  ");
+      printf(BOARD_VERTICAL_LINE);
     }
-    printf("  |  ");
-    if (i < 2) printf("\n  -------------------\n");
-  }
 
-  printf("\n  -------------------\n");
+    printf(BOARD_HORIZONTAL_LINE);
+  }
 }
 
 int update_board(int pos, int turn) {
@@ -172,9 +171,8 @@ int game_loop() {
       space_busy = 0;
     }
 
-    printf("\n");
-    (turn % 2 == 0) ? printf(C_BLUE "Player 1 [X] >" C_RESET)
-                    : printf(C_RED "Player 2 [O] >" C_RESET);
+    (turn % 2 == 0) ? printf(C_BLUE "\nPlayer 1 [X] >" C_RESET)
+                    : printf(C_RED "\nPlayer 2 [O] >" C_RESET);
 
     // User place marker
     fgets(&input, sizeof(&input), stdin);
@@ -196,7 +194,7 @@ int game_loop() {
 
       space_busy = !success;
     }
-  } while (turn < 9);
+  } while (turn < MAX_TURNS);
 
   print_draw(turn);
 
