@@ -12,12 +12,23 @@
 #define PLAYER_ONE_SIGN 'X'
 #define PLAYER_TWO_SIGN 'O'
 
+#define GAMECOLORS  // Comment this line to Remove colors
+
+#ifdef GAMECOLORS
 #define C_RED "\x1b[31m"
 #define C_BLUE "\x1b[34m"
 #define C_CYAN "\x1b[44m"
 #define C_YELLOW "\x1b[93m"
 #define C_MAGENTA "\x1b[35m"
 #define C_RESET "\x1b[0m"
+#else
+#define C_RED ""
+#define C_BLUE ""
+#define C_CYAN ""
+#define C_YELLOW ""
+#define C_MAGENTA ""
+#define C_RESET ""
+#endif
 
 #define ROWS 3
 #define COLS 3
